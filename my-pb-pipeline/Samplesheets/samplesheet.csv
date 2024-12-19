@@ -1,0 +1,2 @@
+sample_id,bam_file
+HG002,/workspaces/nextflow-wave-indapa/BAMs/HG002-rep1-random_subset.bam
