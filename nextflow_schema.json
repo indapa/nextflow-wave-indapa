@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com//master/nextflow_schema.json",
+  "title": " pipeline parameters",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "samplesheet": {
+      "type": "string",
+      "default": "s3://seqera-results-aindap/Samplesheets/samplesheet.csv"
+    },
+    "reference": {
+      "type": "string",
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta"
+    },
+    "reference_index": {
+      "type": "string",
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+    },
+    "aligned_output_dir": {
+      "type": "string",
+      "default": "s3://seqera-results-aindap/pbmm2-results/"
+    },
+    "cpg_output_dir": {
+      "type": "string",
+      "default": "s3://seqera-results-aindap/cpg-results/"
+    },
+    "cpgmodel": {
+      "type": "string",
+      "default": "s3://aindap-pb-resources/pileup_calling_model.v1.tflite"
+    },
+    "cpu": {
+      "type": "integer",
+      "default": 6
+    },
+    "sort_threads": {
+      "type": "integer",
+      "default": 2
+    }
+  },
+  "required": [
+    "samplesheet",
+    "aligned_output_dir",
+    "reference_index",
+    "reference",
+    "cpg_output_dir",
+    "cpgmodel"
+  ]
+}
