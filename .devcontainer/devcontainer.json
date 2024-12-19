@@ -4,6 +4,12 @@
         "dockerfile": "Dockerfile",
         "context": "."
     },
+   
+        "features": {
+          "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+        },
+    
+
     "settings": {
         // Optional: Set VS Code settings, for example Python formatting or linting
         "python.defaultInterpreterPath": "/usr/local/bin/python"
@@ -11,6 +17,5 @@
     "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance"
-    ],
-    "remoteUser": "vscode"
+    ]
 }

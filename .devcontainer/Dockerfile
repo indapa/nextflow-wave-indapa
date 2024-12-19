@@ -2,26 +2,18 @@
 FROM python:3.11-slim
 
 # Install prerequisites
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential curl gcc g++ git unzip zip sudo \
     curl ca-certificates gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Java (OpenJDK). Nextflow supports Java 8+, commonly Java 11 or 17.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-11-jdk \
-    && rm -rf /var/lib/apt/lists/*
 
-# Set JAVA_HOME environment variable for convenience
-ENV JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
-ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Install Python packages
 RUN pip install --no-cache-dir pandas numpy
 
-# Install Nextflow
-RUN curl -fsSL https://get.nextflow.io | bash \
-    && mv nextflow /usr/local/bin/nextflow \
-    && chmod +x /usr/local/bin/nextflow
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+        unzip awscliv2.zip && \
+        sudo ./aws/install
 
 # Create a non-root user (named 'vscode') to match devcontainer defaults
 ARG USERNAME=vscode
@@ -30,5 +22,29 @@ ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
+# (Optional) Give the non-root user sudo access without password
+RUN echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 USER $USERNAME
+
+
+# Set up SDKMAN environment variables
+ENV SDKMAN_DIR="/home/vscode/.sdkman"
+ENV SDKMAN_NON_INTERACTIVE="true"
+
+# Install SDKMAN
+RUN curl -s "https://get.sdkman.io" | bash
+
+# Install a specific version of Java with SDKMAN
+RUN bash -c "source $SDKMAN_DIR/bin/sdkman-init.sh && sdk install java 17.0.8-tem"
+
+# Make the installed Java available on the PATH in future layers
+ENV PATH="$SDKMAN_DIR/candidates/java/current/bin:${PATH}"
+
+WORKDIR /workspaces
+
+RUN curl -s https://get.nextflow.io | bash 
+RUN sudo mv nextflow /usr/local/bin/
+
+
 WORKDIR /workspaces
