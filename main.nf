@@ -3,7 +3,7 @@
 nextflow.enable.dsl=2
 
 include { pbmm2_align; cpg_pileup } from './modules/pbtools'
-paramsFromSchema(params, 'nextflow_schema.json')
+
 
 
 // Replace the input_bams channel definition with this:

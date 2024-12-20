@@ -25,6 +25,21 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 # (Optional) Give the non-root user sudo access without password
 RUN echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+
+# Install Miniconda
+RUN curl -fsSLo /tmp/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    chmod +x /tmp/miniconda.sh && \
+    /tmp/miniconda.sh -b -p /opt/miniconda && \
+    rm -f /tmp/miniconda.sh && \
+    /opt/miniconda/bin/conda clean -afy
+
+# Make conda available on the PATH
+ENV PATH="/opt/miniconda/bin:${PATH}"
+
+# Install nf-core from bioconda/conda-forge
+RUN conda install -y -c conda-forge -c bioconda nf-core && \
+    conda clean -afy
+
 USER $USERNAME
 
 
