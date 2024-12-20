@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     libdbd-mysql-perl \ 
     libkrb5-3 \
+    procps \
     && wget $PBCPG_URL -O /usr/local/bin/pb-CpG-tools.tar.gz \
     && tar -xzf /usr/local/bin/pb-CpG-tools.tar.gz -C /usr/local/bin/ \
     && rm /usr/local/bin/pb-CpG-tools.tar.gz \
