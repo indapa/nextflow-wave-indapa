@@ -3,6 +3,7 @@
 nextflow.enable.dsl=2
 
 include { pbmm2_align; cpg_pileup } from './modules/pbtools'
+include { mosdepth } from './modules/mosdepth'
 
 
 
@@ -51,6 +52,8 @@ pbmm2_align(
         file(params.reference_index),
         file(params.cpgmodel)
     )
+
+    mosdepth(pbmm2_align.out.aligned_bam)
 
 }
 

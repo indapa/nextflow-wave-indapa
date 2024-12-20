@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Install prerequisites
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential curl gcc g++ git unzip zip sudo \
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential curl gcc g++ git unzip zip sudo htop less \
     curl ca-certificates gnupg \
     && rm -rf /var/lib/apt/lists/*
 

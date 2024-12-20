@@ -1,4 +1,5 @@
 # Use a base image with Python
+
 FROM python:3.8-slim-buster AS build
 
 # Set environment variables for URLs
@@ -52,6 +53,3 @@ RUN conda install -y  hificnv \
 RUN conda install -y  -c bioconda pbsv \
     && conda clean -afy
 
-# Install pbmm2 using conda
-RUN conda install -c bioconda -y pbmm2 \
-    && conda clean -afy
