@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Install prerequisites
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential curl gcc g++ git unzip zip sudo htop less \
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential curl gcc g++ git unzip zip sudo htop less gzip \
     curl ca-certificates gnupg \
     && rm -rf /var/lib/apt/lists/*
 
@@ -37,7 +37,7 @@ RUN curl -fsSLo /tmp/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3
 ENV PATH="/opt/miniconda/bin:${PATH}"
 
 # Install nf-core from bioconda/conda-forge
-RUN conda install -y -c conda-forge -c bioconda nf-core && \
+RUN conda install -y -c conda-forge -c bioconda nf-core samtools && \
     conda clean -afy
 
 USER $USERNAME
