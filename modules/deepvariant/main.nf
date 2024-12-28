@@ -1,4 +1,5 @@
 process deepvariant {
+    label 'high_memory'
     tag "${bam.simpleName}"
     publishDir params.deepvariant_output_dir, mode: 'copy'
     
