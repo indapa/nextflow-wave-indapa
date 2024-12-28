@@ -12,8 +12,10 @@ process deepvariant {
         
     
     output:
-        path "${bam.simpleName}.vcf", emit: vcf
-        path "${bam.simpleName}.g.vcf", emit: gvcf
+        path "${bam.baseName}.vcf.gz", emit: vcf
+        path "${bam.baseName}.vcf.gz.tbi", emit: vcf_tbi
+        path "${bam.baseName}.g.vcf.gz", emit: gvcf
+        path "${bam.baseName}.g.vcf.gz.tbi", emit: gvcf_tbi
         
     script:
     """
@@ -21,8 +23,9 @@ process deepvariant {
         --model_type PACBIO \
         --ref ${ref} \
         --reads ${bam} \
-        --output_vcf ${bam.simpleName}.vcf \
-        --output_gvcf ${bam.simpleName}.g.vcf \
+        --output_vcf ${bam.baseName}.vcf.gz \
+        --output_gvcf ${bam.baseName}.g.vcf.gz \
+        --intermediate_results_dir /workspaces/nextflow-wave-indapa/DV-intermediat \
         --num_shards ${threads} 
     """
 }

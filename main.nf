@@ -2,7 +2,7 @@
 
 nextflow.enable.dsl=2
 
-include { pbmm2_align; cpg_pileup; hificnv; trgt; extractRegions; pb_discover; pb_call } from './modules/pbtools'
+include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call } from './modules/pbtools'
 include { mosdepth } from './modules/mosdepth'
 include { deepvariant } from './modules/deepvariant'
 
@@ -131,18 +131,18 @@ workflow {
         .set { bam_regions_ch }
 
         
-        bam_regions_ch.view { sample_id, region, bam, bai -> "sample: $sample_id, bed: $region, BAM: $bam, BAI: $bai"}
+        //bam_regions_ch.view { sample_id, region, bam, bai -> "sample: $sample_id, bed: $region, BAM: $bam, BAI: $bai"}
 
-        pb_discover_results=pb_discover(bam_regions_ch, params.trf_bed )
+        //pb_discover_results=pb_discover(bam_regions_ch, params.trf_bed )
 
          // Group svsig files by sample_id
-        svsig_files_by_sample = pb_discover_results.groupTuple()
+        //svsig_files_by_sample = pb_discover_results.groupTuple()
 
         // Create a channel for the reference genome
-        reference_ch = channel.fromPath(params.reference)
+        //reference_ch = channel.fromPath(params.reference)
 
         // Run pb_call process
-        pb_call(svsig_files_by_sample, reference_ch)
+        //pb_call(svsig_files_by_sample, reference_ch)
 
         //deepvariant
 
