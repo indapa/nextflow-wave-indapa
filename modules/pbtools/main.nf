@@ -150,23 +150,10 @@ process trgt {
 
 /* next set of processes deal with SVs */
 
-process extractRegions {
-    input:
-    tuple val(sample_id), path(bam), path(bam_index)
-    
-       
-    output:
-    tuple val(sample_id), stdout
-
-    script:
-    """
-    samtools view -H ${bam} | grep '^@SQ' | grep -v chrUn | grep -v random | cut -f2 | cut -d':' -f2
-    """
-}
 
 process pb_discover {
     publishDir params.sv_output_dir, mode: 'copy'
-    tag "$sample_id"
+    tag "${sample_id}:${region}"
     
     input:
     tuple val(sample_id), val(region), path(bam), path(bam_index)
