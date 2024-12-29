@@ -42,9 +42,8 @@ Channel.fromPath(params.samplesheet)
 
 
 def REGIONS = [
-    'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
-    'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19',
-    'chr20', 'chr21', 'chr22', 'chrX', 'chrY', 'chrM', 'chrEBV'
+    
+    'chr20'
 ]
 
 // Create a channel from the fixed regions
@@ -70,17 +69,17 @@ workflow {
 
     pbmm2_align.out.aligned_bam.view { "Aligned BAM: $it" }
 
- /* cpg calling 
+ /* cpg calling  */
     cpg_pileup(
         pbmm2_align.out.aligned_bam,
         file(params.reference),
         file(params.reference_index),
         file(params.cpgmodel)
     )
- */
-/* read depth analysis
+
+/* read depth analysis  */
     mosdepth(pbmm2_align.out.aligned_bam)
- */
+
 
 
 
@@ -93,7 +92,7 @@ workflow {
 
     bam_bai_ch.view { sample_id, bam, bai -> "Input: $sample_id, BAM: $bam, BAI: $bai" }
 
-/* cnv analysis 
+/* cnv analysis */
     hificnv(
         bam_bai_ch,
         file(params.reference),
@@ -102,9 +101,9 @@ workflow {
         file(params.expected_bed),
         params.cpu
     )
-*/
 
-/*tandem repeat analysis
+
+/*tandem repeat analysis  */
     trgt(   bam_bai_ch,
         file(params.reference),
         file(params.reference_index),
@@ -113,7 +112,7 @@ workflow {
         params.cpu
     )
 
- */
+
 
 
 /* SV analysis
@@ -131,18 +130,18 @@ workflow {
         .set { bam_regions_ch }
 
         
-        //bam_regions_ch.view { sample_id, region, bam, bai -> "sample: $sample_id, bed: $region, BAM: $bam, BAI: $bai"}
+        bam_regions_ch.view { sample_id, region, bam, bai -> "sample: $sample_id, bed: $region, BAM: $bam, BAI: $bai"}
 
-        //pb_discover_results=pb_discover(bam_regions_ch, params.trf_bed )
+        pb_discover_results=pb_discover(bam_regions_ch, params.trf_bed )
 
          // Group svsig files by sample_id
-        //svsig_files_by_sample = pb_discover_results.groupTuple()
+        svsig_files_by_sample = pb_discover_results.groupTuple()
 
         // Create a channel for the reference genome
-        //reference_ch = channel.fromPath(params.reference)
+        reference_ch = channel.fromPath(params.reference)
 
         // Run pb_call process
-        //pb_call(svsig_files_by_sample, reference_ch)
+        pb_call(svsig_files_by_sample, reference_ch)
 
         //deepvariant
 

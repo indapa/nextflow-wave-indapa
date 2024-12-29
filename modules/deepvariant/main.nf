@@ -26,7 +26,7 @@ process deepvariant {
         --reads ${bam} \
         --output_vcf ${bam.baseName}.vcf.gz \
         --output_gvcf ${bam.baseName}.g.vcf.gz \
-        --intermediate_results_dir /workspaces/nextflow-wave-indapa/DV-intermediat \
+        --regions chr20 \
         --num_shards ${threads} 
     """
 }
