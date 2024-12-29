@@ -1,6 +1,6 @@
 process deepvariant {
     label 'high_memory'
-    tag "${bam.simpleName}"
+    tag "${sample_id}"
     publishDir params.deepvariant_output_dir, mode: 'copy'
     
     container "google/deepvariant:1.8.0"
@@ -8,15 +8,15 @@ process deepvariant {
     input:
         path ref            // Reference genome
         path ref_index      // reference index
-        path bam           // Input BAM file
+        tuple val(sample_id), path(bam), path(bam_index)          // Input BAM file
         val threads        // Number of shards/threads
         
     
     output:
-        path "${bam.baseName}.vcf.gz", emit: vcf
-        path "${bam.baseName}.vcf.gz.tbi", emit: vcf_tbi
-        path "${bam.baseName}.g.vcf.gz", emit: gvcf
-        path "${bam.baseName}.g.vcf.gz.tbi", emit: gvcf_tbi
+        path "${sample_id}.deepvariant.vcf.gz", emit: vcf
+        path "${sample_id}.deepvariant.vcf.gz.tbi", emit: vcf_tbi
+        path "${sample_id}.deepvariant.g.vcf.gz", emit: gvcf
+        path "${sample_id}.deepvariant.g.vcf.gz.tbi", emit: gvcf_tbi
         
     script:
     """
@@ -24,8 +24,8 @@ process deepvariant {
         --model_type PACBIO \
         --ref ${ref} \
         --reads ${bam} \
-        --output_vcf ${bam.baseName}.vcf.gz \
-        --output_gvcf ${bam.baseName}.g.vcf.gz \
+        --output_vcf ${sample_id}.deepvariant.vcf.gz \
+        --output_gvcf ${sample_id}.deepvariant.g.vcf.gz \
         --regions chr20 \
         --num_shards ${threads} 
     """

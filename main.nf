@@ -145,7 +145,7 @@ workflow {
 
         //deepvariant
 
-        deepvariant(params.reference, params.reference_index,pbmm2_align.out.aligned_bam, params.deepvariant_threads )
+        deepvariant(params.reference, params.reference_index, bam_bai_ch, params.deepvariant_threads )
 
 }
 
