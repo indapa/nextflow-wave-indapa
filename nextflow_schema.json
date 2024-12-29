@@ -11,31 +11,85 @@
     },
     "reference": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta"
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+      "description": "reference assembly"
     },
     "reference_index": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai"
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai",
+      "description": "reference assembly index (.fai)"
     },
     "aligned_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/pbmm2-results/"
+      "default": "s3://seqera-results-aindap/pbmm2-results",
+      "description": "read alignment output"
     },
     "cpg_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/cpg-results/"
+      "default": "s3://seqera-results-aindap/cpg-results",
+      "description": "CpG-tools methylation results"
     },
     "cpgmodel": {
       "type": "string",
-      "default": "s3://aindap-pb-resources/pileup_calling_model.v1.tflite"
+      "default": "s3://aindap-pb-resources/pileup_calling_model.v1.tflite",
+      "description": "pb-CpG-tools model"
     },
     "cpu": {
       "type": "integer",
-      "default": 6
+      "default": 16,
+      "description": "number of cpus"
     },
     "sort_threads": {
       "type": "integer",
-      "default": 2
+      "default": 2,
+      "description": "sorting cpus"
+    },
+    "exclude_bed": {
+      "type": "string",
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/hificnv/cnv.excluded_regions.common_50.hg38.bed.gz",
+      "description": "cnv exclude regions"
+    },
+    "expected_bed": {
+      "type": "string",
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/hificnv/expected_cn.hg38.XX.bed",
+      "description": "expected CN regions"
+    },
+    "trgt_repeats": {
+      "type": "string",
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/trgt/human_GRCh38_no_alt_analysis_set.trgt.v0.3.4.bed",
+      "description": "tandem repeat bed"
+    },
+    "trf_bed": {
+      "type": "string",
+      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.trf.bed"
+    },
+    "cnv_output_dir": {
+      "type": "string",
+      "default": "s3://seqera-results-aindap/hificnv-results",
+      "description": "CNV results folder"
+    },
+    "trgt_output_dir": {
+      "type": "string",
+      "default": "s3://seqera-results-aindap/trgt-results",
+      "description": "TRGT  results folder"
+    },
+    "sv_output_dir": {
+      "type": "string",
+      "default": "s3://seqera-results-aindap/pbsv-results",
+      "description": "pbsv results folder"
+    },
+    "deepvariant_output_dir": {
+      "type": "string",
+      "default": "s3://seqera-results-aindap/deepvariant-results",
+      "description": "deepvariant results folder"
+    },
+    "karyotype": {
+      "type": "string",
+      "default": "XX"
+    },
+    "deepvariant_threads": {
+      "type": "integer",
+      "default": 16
     }
   },
   "required": [
