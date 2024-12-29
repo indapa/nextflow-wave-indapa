@@ -36,7 +36,7 @@
     },
     "cpu": {
       "type": "integer",
-      "default": 16,
+      "default": 6,
       "description": "number of cpus"
     },
     "sort_threads": {
