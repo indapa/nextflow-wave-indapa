@@ -172,9 +172,9 @@ process pb_discover {
 }
 
 process pb_call {
+    label 'high_memory'
     publishDir params.sv_output_dir, mode: 'copy'
     tag "$sample_id"
-    
     input:
     tuple val(sample_id), path(svsig_files)
     path reference
