@@ -5,6 +5,7 @@ nextflow.enable.dsl=2
 include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call; hiphase } from './modules/pbtools'
 include { mosdepth } from './modules/mosdepth'
 include { deepvariant } from './modules/deepvariant'
+include {fibertools_extract} from './modules/fiberseq'
 
 
 
@@ -163,6 +164,14 @@ workflow {
             pbmm2_align.out.aligned_bam,
             file(params.reference)
         )
+
+
+        //fibertools extract 
+
+        fibertools_extract (
+            hiphase.out.haplotagged_bam
+        )
+
 }
 
 

@@ -219,7 +219,7 @@ process hiphase {
     path "${sample_id}.deepvariant.phased.vcf.gz", emit: phased_deepvariant 
     path "${sample_id}.pbsv.phased.vcf.gz", emit: phased_pbsv 
     path "${sample_id}.trgt.phased.vcf.gz", emit: phased_trgt 
-    path "${sample_id}.haplotagged.bam", emit: haplotagged_bam 
+    tuple val(sample_id), path("${sample_id}.haplotagged.bam"), emit: haplotagged_bam 
     script:
 
     """
