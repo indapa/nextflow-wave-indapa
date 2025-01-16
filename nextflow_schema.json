@@ -94,6 +94,10 @@
     "hiphase_output_dir": {
       "type": "string",
       "default": "s3://xella-sequencing-test-data"
+    },
+    "fibertools_output_dir": {
+      "type": "string",
+      "default": "s3://xella-sequencing-test-data"
     }
   },
   "required": [
