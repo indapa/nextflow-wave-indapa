@@ -7,7 +7,7 @@
   "properties": {
     "samplesheet": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/Samplesheets/samplesheet.csv"
+      "default": "s3://xella-sequencing-test-data/samplesheet.csv"
     },
     "reference": {
       "type": "string",
@@ -21,22 +21,22 @@
     },
     "aligned_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/pbmm2-results",
+      "default": "s3://xella-sequencing-test-data",
       "description": "read alignment output"
     },
     "cpg_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/cpg-results",
+      "default": "s3://xella-sequencing-test-data",
       "description": "CpG-tools methylation results"
     },
     "cpgmodel": {
       "type": "string",
-      "default": "s3://aindap-pb-resources/pileup_calling_model.v1.tflite",
+      "default": "s3://xella-sequencing-test-data/pileup_calling_model.v1.tflite",
       "description": "pb-CpG-tools model"
     },
     "cpu": {
       "type": "integer",
-      "default": 6,
+      "default": 14,
       "description": "number of cpus"
     },
     "sort_threads": {
@@ -65,22 +65,22 @@
     },
     "cnv_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/hificnv-results",
+      "default": "s3://xella-sequencing-test-data",
       "description": "CNV results folder"
     },
     "trgt_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/trgt-results",
+      "default": "s3://xella-sequencing-test-data",
       "description": "TRGT  results folder"
     },
     "sv_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/pbsv-results",
+      "default": "s3://xella-sequencing-test-data",
       "description": "pbsv results folder"
     },
     "deepvariant_output_dir": {
       "type": "string",
-      "default": "s3://seqera-results-aindap/deepvariant-results",
+      "default": "s3://xella-sequencing-test-data",
       "description": "deepvariant results folder"
     },
     "karyotype": {
@@ -90,6 +90,10 @@
     "deepvariant_threads": {
       "type": "integer",
       "default": 16
+    },
+    "hiphase_output_dir": {
+      "type": "string",
+      "default": "s3://xella-sequencing-test-data"
     }
   },
   "required": [
