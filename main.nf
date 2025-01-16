@@ -2,9 +2,10 @@
 
 nextflow.enable.dsl=2
 
-include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call } from './modules/pbtools'
+include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call; hiphase } from './modules/pbtools'
 include { mosdepth } from './modules/mosdepth'
 include { deepvariant } from './modules/deepvariant'
+
 
 
 
@@ -143,10 +144,25 @@ workflow {
         // Run pb_call process
         pb_call(svsig_files_by_sample, reference_ch)
 
+        
+
         //deepvariant
 
         deepvariant(params.reference, params.reference_index, bam_bai_ch, params.deepvariant_threads )
 
+    
+
+
+        //hiphase
+
+        hiphase(
+            deepvariant.out.vcf,
+            deepvariant.out.vcf_tbi,
+            pb_call.out.pb_call,
+            trgt.out.repeat_vcf,
+            pbmm2_align.out.aligned_bam,
+            file(params.reference)
+        )
 }
 
 

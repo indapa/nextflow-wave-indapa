@@ -171,6 +171,9 @@ process pb_discover {
     """
 }
 
+
+
+
 process pb_call {
     label 'high_memory'
     publishDir params.sv_output_dir, mode: 'copy'
@@ -180,7 +183,7 @@ process pb_call {
     path reference
        
     output:
-    tuple val(sample_id), path("${sample_id}.pbsv.vcf"), emit: pb_call
+    tuple val(sample_id), path("${sample_id}.pbsv.vcf.gz"), path("${sample_id}.pbsv.vcf.gz.tbi"), emit: pb_call
         
     script:
     """
@@ -189,7 +192,45 @@ process pb_call {
     pbsv --version
     pbsv call -j 8 ${reference} ${svsig_files.join(' ')} ${sample_id}.pbsv.vcf
 
+    pbgzip ${sample_id}.pbsv.vcf
+    bcftools index --tbi ${sample_id}.pbsv.vcf.gz
+    
+
     """
 
     
+}
+
+process hiphase {
+
+    label 'high_memory'
+    publishDir params.hiphase_output_dir, mode: 'copy'
+    tag "$sample_id"
+    
+    input:
+    path (deepvariant_vcf)
+    path (deepvariant_tbi)
+    tuple val(sample_id), path(pbsv_vcf), path(pbsv_tbi)
+    tuple val(sample_id), path(trgt_vcf), path(trgt_tbi)
+    tuple path(pbmm2_bam), path(pbmm2_bai)
+    path (reference)
+
+    output:
+    path "${sample_id}.deepvariant.phased.vcf.gz", emit: phased_deepvariant 
+    path "${sample_id}.pbsv.phased.vcf.gz", emit: phased_pbsv 
+    path "${sample_id}.trgt.phased.vcf.gz", emit: phased_trgt 
+    path "${sample_id}.haplotagged.bam", emit: haplotagged_bam 
+    script:
+
+    """
+
+    hiphase --version
+
+   
+
+    hiphase --reference ${reference} --vcf ${deepvariant_vcf} --output-vcf ${sample_id}.deepvariant.phased.vcf.gz  --vcf ${pbsv_vcf} --output-vcf ${sample_id}.pbsv.phased.vcf.gz --vcf ${trgt_vcf} --output-vcf ${sample_id}.trgt.phased.vcf.gz --bam ${pbmm2_bam} --output-bam ${sample_id}.haplotagged.bam
+
+
+    """
+
 }

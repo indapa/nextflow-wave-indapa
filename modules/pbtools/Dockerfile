@@ -44,7 +44,7 @@ RUN wget $MINICONDA_URL -O miniconda.sh \
 ENV PATH="/opt/conda/bin:${PATH}"
 
 # Install pbmm2 using conda
-RUN conda install -c bioconda -y pbmm2 \
+RUN conda install -c bioconda -y pbmm2  \
     && conda clean -afy
 
 # install hificnv
@@ -52,6 +52,11 @@ RUN conda install -y  hificnv \
     && conda clean -afy
 
 # install pbsv 
-RUN conda install -y  -c bioconda pbsv \
+RUN conda install -y  -c bioconda pbsv hiphase  \
     && conda clean -afy
+
+#pbgzip
+RUN conda install bioconda::pbgzip \
+    && conda clean -afy
+
 
