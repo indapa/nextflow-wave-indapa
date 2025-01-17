@@ -6,6 +6,7 @@ include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call; hiphase 
 include { mosdepth } from './modules/mosdepth'
 include { deepvariant } from './modules/deepvariant'
 include {fibertools_extract} from './modules/fiberseq'
+include {vep-annotate} from './modules/ensembl-vep'
 
 
 
@@ -170,6 +171,16 @@ workflow {
 
         fibertools_extract (
             hiphase.out.haplotagged_bam
+        )
+
+        //vep annotate
+
+        vep-annotate(
+            hiphase.out.phased_deepvariant,
+            hiphase.out.haplotagged_bam,
+            path(params.pigeon_gtf),
+            path(params.pigeon_tbi),
+            path(params.reference)
         )
 
 }
