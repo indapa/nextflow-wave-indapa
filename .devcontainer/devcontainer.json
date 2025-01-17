@@ -11,7 +11,7 @@
     
 
     "settings": {
-        // Optional: Set VS Code settings, for example Python formatting or linting
+        
         "python.defaultInterpreterPath": "/usr/local/bin/python"
     },
     "extensions": [
