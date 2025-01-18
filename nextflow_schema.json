@@ -7,7 +7,7 @@
   "properties": {
     "samplesheet": {
       "type": "string",
-      "default": "s3://xella-sequencing-test-data/samplesheet.csv"
+      "default": "/workspaces/nextflow-wave-indapa/Samplesheets/samplesheet.csv"
     },
     "reference": {
       "type": "string",
@@ -31,12 +31,12 @@
     },
     "cpgmodel": {
       "type": "string",
-      "default": "s3://xella-sequencing-test-data/pileup_calling_model.v1.tflite",
+      "default": "/workspaces/nextflow-wave-indapa/resources/pileup_calling_model.v1.tflite",
       "description": "pb-CpG-tools model"
     },
     "cpu": {
       "type": "integer",
-      "default": 14,
+      "default": 6,
       "description": "number of cpus"
     },
     "sort_threads": {
@@ -98,6 +98,14 @@
     "fibertools_output_dir": {
       "type": "string",
       "default": "s3://xella-sequencing-test-data"
+    },
+    "pigeon_gtf": {
+      "type": "string",
+      "default": "/workspaces/nextflow-wave-indapa/resources/gencode.v39.annotation.sorted.gtf.gz"
+    },
+    "pigeon_tbi": {
+      "type": "string",
+      "default": "/workspaces/nextflow-wave-indapa/resources/gencode.v39.annotation.sorted.gtf.gz.tbi"
     }
   },
   "required": [
