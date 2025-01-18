@@ -26,7 +26,6 @@ process deepvariant {
         --reads ${bam} \
         --output_vcf ${sample_id}.deepvariant.vcf.gz \
         --output_gvcf ${sample_id}.deepvariant.g.vcf.gz \
-        --regions chr20 \
         --num_shards ${threads} 
     """
 }
