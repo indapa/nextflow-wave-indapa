@@ -6,7 +6,7 @@ include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call; hiphase 
 include { mosdepth } from './modules/mosdepth'
 include { deepvariant } from './modules/deepvariant'
 include {fibertools_extract} from './modules/fiberseq'
-include {vep-annotate} from './modules/ensembl-vep'
+include {annotate_vep} from './modules/ensemblvep'
 
 
 
@@ -46,7 +46,9 @@ Channel.fromPath(params.samplesheet)
 
 def REGIONS = [
     
-    'chr20'
+    'chr20',
+    
+   
 ]
 
 // Create a channel from the fixed regions
@@ -175,12 +177,12 @@ workflow {
 
         //vep annotate
 
-        vep-annotate(
+        annotate_vep(
             hiphase.out.phased_deepvariant,
             hiphase.out.haplotagged_bam,
-            path(params.pigeon_gtf),
-            path(params.pigeon_tbi),
-            path(params.reference)
+            file(params.pigeon_gtf),
+            file(params.pigeon_tbi),
+            file(params.reference)
         )
 
 }
