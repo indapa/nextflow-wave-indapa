@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 
 include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call; hiphase } from './modules/pbtools'
 include { mosdepth } from './modules/mosdepth'
-include { deepvariant } from './modules/deepvariant'
+include { deepvariant; deepvariant_chr20 } from './modules/deepvariant'
 include {fibertools_extract} from './modules/fiberseq'
 include {annotate_vep} from './modules/ensemblvep'
 
@@ -45,7 +45,6 @@ Channel.fromPath(params.samplesheet)
 
 
 def REGIONS = [
-    
     'chr1',
     'chr2',
     'chr3',
@@ -69,7 +68,6 @@ def REGIONS = [
     'chr21',
     'chr22',
     'chrX'
-    
    
 ]
 
@@ -175,6 +173,7 @@ workflow {
         //deepvariant
 
         deepvariant(params.reference, params.reference_index, bam_bai_ch, params.deepvariant_threads )
+        //deepvariant_chr20(params.reference, params.reference_index, bam_bai_ch, params.deepvariant_threads )
 
     
 
@@ -194,14 +193,13 @@ workflow {
         //fibertools extract 
 
         fibertools_extract (
-            hiphase.out.haplotagged_bam
+            bam_bai_ch
         )
 
         //vep annotate
 
         annotate_vep(
             hiphase.out.phased_deepvariant,
-            hiphase.out.haplotagged_bam,
             file(params.pigeon_gtf),
             file(params.pigeon_tbi),
             file(params.reference)

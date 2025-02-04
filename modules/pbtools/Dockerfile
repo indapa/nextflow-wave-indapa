@@ -58,5 +58,3 @@ RUN conda install -y  -c bioconda pbsv hiphase  \
 #pbgzip
 RUN conda install bioconda::pbgzip \
     && conda clean -afy
-
-

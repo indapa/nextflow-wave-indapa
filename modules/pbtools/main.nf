@@ -152,7 +152,7 @@ process trgt {
 
 
 process pb_discover {
-    publishDir params.sv_output_dir, mode: 'copy'
+    //publishDir params.sv_output_dir, mode: 'copy'
     tag "${sample_id}:${region}"
     
     input:
@@ -201,36 +201,73 @@ process pb_call {
     
 }
 
-process hiphase {
 
+process hiphase_small_variants {
+    /* hiphase small variants only */
+
+    label 'high_memory'
+    publishDir params.hiphase_output_dir, mode: 'copy'
+    tag "$sample_id"
+
+    input:
+    tuple val(sample_id), path(vcf), path(vcf_tbi), path(pbmm2_bam), path(pbmm2_bai)
+    path reference
+
+    output:
+    tuple val(sample_id), path("*.phased.vcf.gz"), path("*.phased.vcf.gz.tbi"), emit: phased_vcf 
+
+    script:
+    def basename = vcf.simpleName  // Gets name without extension
+    """
+    hiphase --version
+
+    hiphase --reference ${reference} \
+            --bam ${pbmm2_bam} \
+            --vcf ${vcf} \
+            --output-vcf ${basename}.phased.vcf.gz 
+
+    bcftools index --tbi ${basename}.phased.vcf.gz
+    """
+}
+
+process hiphase {
     label 'high_memory'
     publishDir params.hiphase_output_dir, mode: 'copy'
     tag "$sample_id"
     
     input:
-    path (deepvariant_vcf)
-    path (deepvariant_tbi)
+    path deepvariant_vcf
+    path deepvariant_tbi
     tuple val(sample_id), path(pbsv_vcf), path(pbsv_tbi)
     tuple val(sample_id), path(trgt_vcf), path(trgt_tbi)
     tuple path(pbmm2_bam), path(pbmm2_bai)
-    path (reference)
+    path reference
 
     output:
-    path "${sample_id}.deepvariant.phased.vcf.gz", emit: phased_deepvariant 
-    path "${sample_id}.pbsv.phased.vcf.gz", emit: phased_pbsv 
-    path "${sample_id}.trgt.phased.vcf.gz", emit: phased_trgt 
-    tuple val(sample_id), path("${sample_id}.haplotagged.bam"), emit: haplotagged_bam 
+    tuple val(sample_id), path("${sample_id}.deepvariant.phased.vcf.gz"), path("${sample_id}.deepvariant.phased.vcf.gz.tbi"), emit: phased_deepvariant 
+    tuple val(sample_id), path("${sample_id}.pbsv.phased.vcf.gz"), path("${sample_id}.pbsv.phased.vcf.gz.tbi"), emit: phased_pbsv 
+    tuple val(sample_id), path("${sample_id}.trgt.phased.vcf.gz"), path("${sample_id}.trgt.phased.vcf.gz.tbi"), emit: phased_trgt 
+    
+
     script:
-
     """
-
     hiphase --version
+
+    hiphase --reference ${reference} \
+            --bam ${pbmm2_bam} \
+            --vcf ${deepvariant_vcf} \
+            --output-vcf ${sample_id}.deepvariant.phased.vcf.gz \
+            --vcf ${pbsv_vcf} \
+            --output-vcf ${sample_id}.pbsv.phased.vcf.gz \
+            --vcf ${trgt_vcf} \
+            --output-vcf ${sample_id}.trgt.phased.vcf.gz 
+            
+            
 
    
 
-    hiphase --reference ${reference} --vcf ${deepvariant_vcf} --output-vcf ${sample_id}.deepvariant.phased.vcf.gz  --vcf ${pbsv_vcf} --output-vcf ${sample_id}.pbsv.phased.vcf.gz --vcf ${trgt_vcf} --output-vcf ${sample_id}.trgt.phased.vcf.gz --bam ${pbmm2_bam} --output-bam ${sample_id}.haplotagged.bam
-
-
+    bcftools index --force  --tbi ${sample_id}.deepvariant.phased.vcf.gz
+    bcftools index --force --tbi ${sample_id}.pbsv.phased.vcf.gz
+    bcftools index  --force --tbi ${sample_id}.trgt.phased.vcf.gz
     """
-
 }
