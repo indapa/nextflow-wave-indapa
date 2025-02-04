@@ -11,12 +11,12 @@
     },
     "reference": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta",
+      "default": "/workspaces/nextflow-wave-indapa/resources/human_GRCh38_no_alt_analysis_set.fasta",
       "description": "reference assembly"
     },
     "reference_index": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.fasta.fai",
+      "default": "/workspaces/nextflow-wave-indapa/resources/human_GRCh38_no_alt_analysis_set.fasta.fai",
       "description": "reference assembly index (.fai)"
     },
     "aligned_output_dir": {
@@ -46,22 +46,22 @@
     },
     "exclude_bed": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/hificnv/cnv.excluded_regions.common_50.hg38.bed.gz",
+      "default": "/workspaces/nextflow-wave-indapa/resources/cnv.excluded_regions.common_50.hg38.bed.gz",
       "description": "cnv exclude regions"
     },
     "expected_bed": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/hificnv/expected_cn.hg38.XX.bed",
+      "default": "/workspaces/nextflow-wave-indapa/resources/expected_cn.hg38.XX.bed",
       "description": "expected CN regions"
     },
     "trgt_repeats": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/trgt/human_GRCh38_no_alt_analysis_set.trgt.v0.3.4.bed",
+      "default": "/workspaces/nextflow-wave-indapa/resources/human_GRCh38_no_alt_analysis_set.trgt.v0.3.4.bed",
       "description": "tandem repeat bed"
     },
     "trf_bed": {
       "type": "string",
-      "default": "s3://pacbio-hifi-human-wgs-reference/dataset/hifi-wdl-resources-v2.0.0/GRCh38/human_GRCh38_no_alt_analysis_set.trf.bed"
+      "default": "/workspaces/nextflow-wave-indapa/resources/human_GRCh38_no_alt_analysis_set.trf.bed"
     },
     "cnv_output_dir": {
       "type": "string",
@@ -106,6 +106,10 @@
     "pigeon_tbi": {
       "type": "string",
       "default": "/workspaces/nextflow-wave-indapa/resources/gencode.v39.annotation.sorted.gtf.gz.tbi"
+    },
+    "vep_output_dir": {
+      "type": "string",
+      "default": "/workspaces/nextflow-wave-indapa/VEP-results"
     }
   },
   "required": [
