@@ -5,9 +5,10 @@ process fibertools_extract  {
 
 
     input:
-    tuple val(sample_id), path(bam)
+    tuple val(sample_id), path(bam), path(bai)
     output:
     path "${sample_id}.m6a.bed.gz", emit: m6a_bed 
+    path "${sample_id}.m6a.bed.gz.tbi", emit: m6a_bed_tbi
 
     script:
 
@@ -15,6 +16,7 @@ process fibertools_extract  {
 
     ft --version
     ft extract ${bam} --m6a ${sample_id}.m6a.bed.gz
+    tabix -p bed ${sample_id}.m6a.bed.gz
 
     """
 

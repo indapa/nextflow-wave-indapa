@@ -20,8 +20,6 @@ RUN apt-get update && apt-get install -y \
     libdbd-mysql-perl \ 
     libkrb5-3 \
     procps \
-    samtools \
-    bcftools \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -34,9 +32,5 @@ RUN wget $MINICONDA_URL -O miniconda.sh \
 ENV PATH="/opt/conda/bin:${PATH}"
 
 # Install fibertools using conda https://fiberseq.github.io/fibertools/install.html
-RUN conda install -y  -c conda-forge -c bioconda fibertools-rs  \
+RUN conda install -y  -c conda-forge -c bioconda fibertools-rs htslib \
     && conda clean -afy
-
-
-
-
