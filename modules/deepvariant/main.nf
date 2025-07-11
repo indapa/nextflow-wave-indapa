@@ -28,6 +28,15 @@ process deepvariant {
         --output_gvcf ${sample_id}.deepvariant.g.vcf.gz \
         --num_shards ${threads} 
     """
+
+    stub:
+    """
+    touch ${sample_id}.deepvariant.vcf.gz
+    touch ${sample_id}.deepvariant.vcf.gz.tbi
+    touch ${sample_id}.deepvariant.g.vcf.gz
+    touch ${sample_id}.deepvariant.g.vcf.gz.tbi
+    """
+
 }
 
 process deepvariant_chr20 {

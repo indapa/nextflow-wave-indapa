@@ -5,13 +5,14 @@ nextflow.enable.dsl=2
 include { pbmm2_align; cpg_pileup; hificnv; trgt; pb_discover; pb_call; hiphase } from './modules/pbtools'
 include { mosdepth } from './modules/mosdepth'
 include { deepvariant; deepvariant_chr20 } from './modules/deepvariant'
-include {fibertools_extract} from './modules/fiberseq'
-include {annotate_vep} from './modules/ensemblvep'
+include {fibertools_extract; fibertools_extract_all; fibertools_extract_all_to_parquet; m6a_extract_parquet} from './modules/fiberseq'
+include {annotate_vep_no_phased; annotate_vep} from './modules/ensemblvep'
+include{bam_stats} from './modules/samtools'
 
 
 
 
-def required_params = ['reference', 'samplesheet', 'cpgmodel', 'karyotype', 'sv_output_dir']
+def required_params = ['reference', 'samplesheet',  'karyotype']
 for (param in required_params) {
     if (!params[param]) {
         error "Parameter '$param' is required!"
@@ -42,6 +43,11 @@ Channel.fromPath(params.samplesheet)
     }
     .set { input_bams_ch }
 
+    Channel.fromPath(params.samplesheet)
+    .splitCsv(header: true)
+    .map { row -> row.sample_id }
+    .set { sample_ids_ch }
+
 
 
 def REGIONS = [
@@ -67,7 +73,8 @@ def REGIONS = [
     'chr20',
     'chr21',
     'chr22',
-    'chrX'
+    'chrX',
+    'chrY'
    
 ]
 
@@ -78,9 +85,9 @@ Channel
 
 workflow {
     
-    input_bams_ch.view { sample_id, bam -> "Sample ID: $sample_id, BAM: $bam" }
+    //input_bams_ch.view { sample_id, bam -> "Sample ID: $sample_id, BAM: $bam" }
 
-    regions_ch.view { region -> "BED region: $region" } 
+    //regions_ch.view { region -> "BED region: $region" } 
 
 /* read alignment */
     pbmm2_align(
@@ -92,14 +99,12 @@ workflow {
     )
     // print the pbmm2_align channel
 
-    pbmm2_align.out.aligned_bam.view { "Aligned BAM: $it" }
+    //pbmm2_align.out.aligned_bam.view { "Aligned BAM: $it" }
 
  /* cpg calling  */
     cpg_pileup(
-        pbmm2_align.out.aligned_bam,
-        file(params.reference),
-        file(params.reference_index),
-        file(params.cpgmodel)
+        pbmm2_align.out.aligned_bam
+        
     )
 
 /* read depth analysis  */
@@ -115,7 +120,7 @@ workflow {
     tuple(sample_id, bam, bai)
 }
 
-    bam_bai_ch.view { sample_id, bam, bai -> "Input: $sample_id, BAM: $bam, BAI: $bai" }
+    //bam_bai_ch.view { sample_id, bam, bai -> "Input: $sample_id, BAM: $bam, BAI: $bai" }
 
 /* cnv analysis */
     hificnv(
@@ -155,18 +160,17 @@ workflow {
         .set { bam_regions_ch }
 
         
-        bam_regions_ch.view { sample_id, region, bam, bai -> "sample: $sample_id, bed: $region, BAM: $bam, BAI: $bai"}
+        //bam_regions_ch.view { sample_id, region, bam, bai -> "sample: $sample_id, bed: $region, BAM: $bam, BAI: $bai"}
 
         pb_discover_results=pb_discover(bam_regions_ch, params.trf_bed )
 
          // Group svsig files by sample_id
         svsig_files_by_sample = pb_discover_results.groupTuple()
 
-        // Create a channel for the reference genome
-        reference_ch = channel.fromPath(params.reference)
+        
 
         // Run pb_call process
-        pb_call(svsig_files_by_sample, reference_ch)
+        pb_call(svsig_files_by_sample, file(params.reference))
 
         
 
@@ -180,30 +184,50 @@ workflow {
 
         //hiphase
 
-        hiphase(
+        /*hiphase( skip for now because the SM headers and VCF headers are not matching and it throws an error
             deepvariant.out.vcf,
             deepvariant.out.vcf_tbi,
             pb_call.out.pb_call,
             trgt.out.repeat_vcf,
             pbmm2_align.out.aligned_bam,
             file(params.reference)
-        )
+        )*/
 
 
-        //fibertools extract 
+        //fibertools extract generates bed6 
 
-        fibertools_extract (
+        fibertools_extract_all (
             bam_bai_ch
         )
 
+        // convert bed6 to parquet format
+        fibertools_extract_all_to_parquet(
+            fibertools_extract_all.out.ft_all_bed
+        )
+
+        //m6a extract parquet data to CSV
+        m6a_extract_parquet(
+            fibertools_extract_all_to_parquet.out.ft_all_parquet
+        )
+
+
         //vep annotate
 
-        annotate_vep(
-            hiphase.out.phased_deepvariant,
-            file(params.pigeon_gtf),
-            file(params.pigeon_tbi),
+        annotate_vep_no_phased(
+            deepvariant.out.vcf,
+            deepvariant.out.vcf_tbi,
+            sample_ids_ch,
+            file(params.pigeon_gtf_bgzip),
+            file(params.pigeon_gtf_tbi),
             file(params.reference)
         )
+
+
+        bam_stats(
+            pbmm2_align.out.aligned_bam
+        )
+
+        
 
 }
 
