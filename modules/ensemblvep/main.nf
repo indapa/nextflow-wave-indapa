@@ -59,9 +59,7 @@ process annotate_vep_no_phased {
     publishDir params.vep_output_dir, mode: 'copy', pattern: '*.vcf.gz*'
 
     input:
-    path deepvariant_vcf
-    path deepvariant_tbi
-    val(sample_id)
+    tuple val(sample_id), path(deepvariant_vcf), path(deepvariant_tbi)
     path pigeon_gtf
     path pigeon_tbi
     path reference

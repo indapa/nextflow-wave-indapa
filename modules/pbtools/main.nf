@@ -1,10 +1,8 @@
-process pbindex_bam {
-    
-}
+
 
 process pbmm2_align {
     label 'high_memory'
-    publishDir "${params.aligned_output_dir}", mode: 'copy'
+    publishDir "${params.aligned_output_dir}/${sample_id}", mode: 'copy', overwrite: true
     tag "$sample_id"
     container "quay.io/pacbio/pbmm2:1.17.0_build1"
 
@@ -82,19 +80,20 @@ process cpg_pileup_haplotagged {
     """
 }
 
-process cpg_pileup {
-    
-    publishDir "${params.cpg_output_dir}", mode: 'copy'
+process cpg_pileup_downsampled {
+
+    publishDir "${params.cpg_downsampled_output_dir}", mode: 'copy', overwrite: true
     tag "$bam"
     container "quay.io/pacbio/pb-cpg-tools:3.0.0_build1"
+    errorStrategy 'ignore'  // Add this line to skip failed samples
 
     input:
     tuple path(bam), path(bam_index)
     
 
     output:
-    path "${bam.baseName}.*.bed.gz", emit: pileup_beds
-    path "${bam.baseName}.*.bw", emit: pileup_bigwigs
+    path "${bam.baseName}.*.bed.gz", optional: true, emit: pileup_beds
+    path "${bam.baseName}.*.bw", optional: true, emit: pileup_bigwigs
 
     script:
     """
@@ -103,8 +102,8 @@ process cpg_pileup {
         --bam ${bam} \\
         --output-prefix ${bam.baseName} \\
         --min-mapq 20 \\
-        --min-coverage 10 \\
-        
+        --min-coverage 4 
+
     """
 
 
@@ -122,10 +121,85 @@ process cpg_pileup {
 }
 
 
+process cpg_pileup {
+    
+    publishDir "${params.cpg_output_dir}/${sample_id}", mode: 'copy', overwrite: true
+    tag "$sample_id"
+    container "quay.io/pacbio/pb-cpg-tools:3.0.0_build1"
+    errorStrategy 'ignore'  // Add this line to skip failed samples
+
+    input:
+    tuple val(sample_id), path(bam), path(bam_index)
+    
+
+    output:
+    path "${bam.baseName}.*.bed.gz", optional: true, emit: pileup_beds
+    path "${bam.baseName}.*.bw", optional: true, emit: pileup_bigwigs
+
+    script:
+    """
+    aligned_bam_to_cpg_scores \\
+        --threads 4 \\
+        --bam ${bam} \\
+        --output-prefix ${bam.baseName} \\
+        --min-mapq 20 \\
+        --min-coverage 4 \\
+        
+    """
+
+    stub:
+    """
+    # Create mock BED files (compressed)
+    echo -e "chr1\t1000\t1001\t0.85" | gzip > ${bam.baseName}.aligned.combined.bed.gz
+    
+    # Create mock BigWig files
+    touch ${bam.baseName}.aligned.combined.bw
+    
+    """
+}
+
+process cpg_pileup_filtered {
+    
+    publishDir "${params.cpg_output_dir}/${sample_id}", mode: 'copy', overwrite: true
+    tag "$bam"
+    container "quay.io/pacbio/pb-cpg-tools:3.0.0_build1"
+    errorStrategy 'ignore'
+
+    input:
+    tuple path(bam), path(bam_index)
+    
+
+    output:
+    path "${bam.baseName}.*.bed.gz", optional: true, emit: pileup_beds
+    path "${bam.baseName}.*.bw", optional: true, emit: pileup_bigwigs
+
+    script:
+    """
+    aligned_bam_to_cpg_scores \\
+        --threads 4 \\
+        --bam ${bam} \\
+        --output-prefix ${bam.baseName} \\
+        --min-mapq 20 \\
+        --min-coverage 10 \\
+        
+    """
+
+    stub:
+    """
+    # Create mock BED files (compressed)
+    echo -e "chr1\t1000\t1001\t0.85" | gzip > ${bam.baseName}.aligned.combined.bed.gz
+    
+    # Create mock BigWig files
+    touch ${bam.baseName}.aligned.combined.bw
+    """
+}
+
+
 process hificnv {
-    publishDir params.cnv_output_dir, mode: 'copy'
+    publishDir "${params.cnv_output_dir}/${sample_id}", mode: 'copy', overwrite: true
     tag "$sample_id"
     container "quay.io/pacbio/hificnv:1.0.1_build1"
+    errorStrategy 'ignore'  // Add this line to skip failed samples
 
     input:
     tuple val(sample_id), path(bam), path(bam_index)
@@ -136,10 +210,11 @@ process hificnv {
     val(cpus)
 
     output:
-    tuple val(sample_id), path("*.vcf.gz"),  emit: hifi_vcf
-    tuple val(sample_id), path("*.bw"), emit: hifi_bigwig
-    tuple val(sample_id), path("*.bedgraph"), emit: hifi_bedgraph
+    tuple val(sample_id), path("*.vcf.gz"), optional: true, emit: hifi_vcf
+    tuple val(sample_id), path("*.bw"), optional: true, emit: hifi_bigwig
+    tuple val(sample_id), path("*.bedgraph"), optional: true, emit: hifi_bedgraph
     tuple val(sample_id), path("*.log"), emit: hifi_log
+
 
     script:
     """
@@ -183,7 +258,7 @@ process hificnv {
 
 
 process trgt {
-    publishDir params.trgt_output_dir, mode: 'copy'
+    publishDir "${params.trgt_output_dir}/${sample_id}", mode: 'copy', overwrite: true
     tag "$sample_id"
     container "quay.io/pacbio/trgt:3.0.0_build1"
     
@@ -196,9 +271,9 @@ process trgt {
         val(cpus)
 
     output:
-        tuple val(sample_id), path("${sample_id}.trgt.spanning.sorted.bam"), path("${sample_id}.trgt.spanning.sorted.bam.bai"), emit: spanning_reads
-        tuple val(sample_id), path("${sample_id}.trgt.sorted.vcf.gz"), path("${sample_id}.trgt.sorted.vcf.gz.tbi"), emit: repeat_vcf
-
+        tuple val(sample_id), path("${sample_id}.trgt.spanning.sorted.bam"), path("${sample_id}.trgt.spanning.sorted.bam.bai"), optional: true, emit: spanning_reads
+        tuple val(sample_id), path("${sample_id}.trgt.sorted.vcf.gz"), path("${sample_id}.trgt.sorted.vcf.gz.tbi"), optional: true, emit: repeat_vcf
+    
     script:
     """
     set -euo pipefail
@@ -295,7 +370,7 @@ process pb_discover {
 process pb_call {
     label 'high_memory_spot'
     container "quay.io/pacbio/pbsv:2.11.0_build1"
-    publishDir params.sv_output_dir, mode: 'copy'
+    publishDir "${params.sv_output_dir}/${sample_id}", mode: 'copy', overwrite: true
     tag "$sample_id"
     input:
     tuple val(sample_id), path(svsig_files)
@@ -347,7 +422,7 @@ process hiphase_small_variants {
     /* hiphase small variants only */
 
     label 'high_memory_spot'
-    publishDir params.hiphase_output_dir, mode: 'copy'
+    publishDir "${params.hiphase_output_dir}/${sample_id}", mode: 'copy', overwrite: true
     container "quay.io/pacbio/hiphase:1.5.0_build1"
     tag "$sample_id"
 
@@ -384,7 +459,7 @@ process hiphase_small_variants {
 
 process hiphase {
     label 'high_memory'
-    publishDir params.hiphase_output_dir, mode: 'copy'
+    publishDir "${params.hiphase_output_dir}/${sample_id}", mode: 'copy', overwrite: true
     container "quay.io/pacbio/hiphase:1.5.0_build1"
     tag "$sample_id"
     
